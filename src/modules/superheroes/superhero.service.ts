@@ -22,6 +22,8 @@ export class SuperheroService {
     try {
       return await this.superheroRepository
         .createQueryBuilder('superhero')
+        .leftJoinAndSelect('superhero.superpowers', 'superpowers')
+        .leftJoinAndSelect('superhero.pictures', 'pictures')
         .where('superhero.id = :id', { id })
         .getOne();
     } catch (error) {
@@ -29,9 +31,26 @@ export class SuperheroService {
     }
   }
 
-  async getAllSuperheroes(): Promise<Superhero[]> {
+  async getCountSuperheroes() {
     try {
-      const superheroes = await this.superheroRepository.find();
+      const count = await this.superheroRepository.findAndCount()
+
+      return { total: count[1], pages: Math.ceil(count[1] / 6)}
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  async getAllSuperheroes(page: number): Promise<Superhero[]> {
+    try {
+      const toSkip = (page - 1) * 6
+      const superheroes = await this.superheroRepository.find({
+        take: 6,
+        skip: toSkip,
+        order: {
+          created_at: 'DESC'
+        }
+      });
 
       return superheroes;
     } catch (e) {

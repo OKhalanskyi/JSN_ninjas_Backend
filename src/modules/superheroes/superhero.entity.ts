@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Superpower } from 'modules/superpowers/superpower.entity';
 import { Picture } from 'modules/Picture/Picture.entity';
 
@@ -39,4 +39,7 @@ export class Superhero {
   @ManyToMany(() => Superpower)
   @JoinTable()
   superpowers: Superpower[];
+
+  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+  public created_at: Date;
 }
